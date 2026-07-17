@@ -239,7 +239,8 @@ async function generatePDFFromJSON(cv) {
 
   // Launch headless browser via Puppeteer
   const browser = await puppeteer.launch({
-    headless: 'new',
+    executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined,
+    headless: true,
     args: ['--no-sandbox', '--disable-setuid-sandbox']
   });
 
