@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- SEO -->
+  <title>MarCV – AI Resume Builder</title>
+  <meta name="description" content="MarCV turns your raw career info into a polished, professional PDF resume in seconds — powered by Groq AI." />
+  <meta name="theme-color" content="#090d18" />
+
+  <!-- Open Graph -->
+  <meta property="og:title"       content="MarCV – AI Resume Builder" />
+  <meta property="og:description" content="Generate a professional PDF resume from your career information with AI." />
+  <meta property="og:type"        content="website" />
+
+  <!-- Fonts (preconnect for speed) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+
+  <!-- ── Decorative background ─────────────────────────── -->
+  <div class="bg-canvas" aria-hidden="true">
+    <div class="bg-grid"></div>
+    <div class="bg-orb bg-orb--1"></div>
+    <div class="bg-orb bg-orb--2"></div>
+    <div class="bg-orb bg-orb--3"></div>
+  </div>
+
+  <!-- ── App shell ─────────────────────────────────────── -->
+  <div id="app">
+
+    <!-- ── Navbar ───────────────────────────────────────── -->
+    <header class="navbar" role="banner">
+      <div class="container">
+        <a href="/" class="logo" aria-label="MarCV home">
+          <!-- Logo icon: document with sparkle -->
+          <div class="logo__icon" aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              <path d="M6 2h9l5 5v15a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1h1Zm0 0h8v4a1 1 0 0 0 1 1h4M8 13h8M8 17h5"/>
+            </svg>
+          </div>
+          <span class="logo__text">MarCV</span>
+        </a>
+        <span class="nav-badge" aria-label="Version beta">Beta</span>
+      </div>
+    </header>
+
+    <!-- ── Main content ──────────────────────────────────── -->
+    <main id="main-content">
+
+      <!-- Hero section -->
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="container">
+
+          <div class="hero__eyebrow" aria-label="Powered by Groq AI">
+            <span class="dot" aria-hidden="true"></span>
+            Powered by Groq AI
+          </div>
+
+          <h1 id="hero-title" class="hero__title">
+            Build a Resume That<br>
+            <span class="gradient-text">Actually Gets Noticed</span>
+          </h1>
+
+          <p class="hero__subtitle">
+            Paste your career information and let MarCV craft a clean,
+            professional PDF resume in seconds — zero formatting hassle.
+          </p>
+
+          <div class="hero__features" role="list" aria-label="Key features">
+            <div class="feature-pill" role="listitem">
+              <span class="icon" aria-hidden="true">⚡</span> Instant generation
+            </div>
+            <div class="feature-pill" role="listitem">
+              <span class="icon" aria-hidden="true">🤖</span> AI-enhanced content
+            </div>
+            <div class="feature-pill" role="listitem">
+              <span class="icon" aria-hidden="true">📄</span> Clean PDF export
+            </div>
+            <div class="feature-pill" role="listitem">
+              <span class="icon" aria-hidden="true">🎨</span> Professional design
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ── Builder card ──────────────────────────────── -->
+      <section class="container" aria-label="Resume builder">
+
+        <div class="main-card">
+
+          <!-- Textarea label row -->
+          <div class="form-header">
+            <label for="resume-input" class="form-label">
+              <span class="label-icon" aria-hidden="true">✍️</span>
+              Your Resume Information
+            </label>
+            <span class="char-counter" aria-live="polite" aria-atomic="true">
+              <span id="char-count">0</span> / 8000 chars
+            </span>
+          </div>
+
+          <!-- Main textarea -->
+          <textarea
+            id="resume-input"
+            name="resumeInput"
+            maxlength="8000"
+            spellcheck="true"
+            autocorrect="on"
+            placeholder="Paste or type your career details here. Include:
+
+• Full name &amp; contact info (email, phone, LinkedIn, location)
+• Work experience (company, role, dates, key achievements)
+• Education (degree, institution, year)
+• Technical &amp; soft skills
+• Projects, certifications, or awards
+
+The more detail you provide, the better your CV will be!"
+            aria-required="true"
+            aria-describedby="textarea-tips"
+          ></textarea>
+
+          <!-- Tip chips -->
+          <div class="tips-row" id="textarea-tips" role="note">
+            <span class="tips-label">💡 Include:</span>
+            <span class="tip-chip">Name &amp; contact</span>
+            <span class="tip-chip">Work history</span>
+            <span class="tip-chip">Education</span>
+            <span class="tip-chip">Skills</span>
+            <span class="tip-chip">Projects</span>
+          </div>
+
+          <!-- Generate button -->
+          <button
+            id="btn-generate"
+            class="btn-generate"
+            type="button"
+            aria-label="Generate CV from resume information"
+          >
+            <span class="btn-icon" aria-hidden="true">✨</span>
+            <span class="btn-label">Generate My CV</span>
+          </button>
+
+        </div>
+
+        <!-- ── Loading state ────────────────────────────── -->
+        <div id="loading-state" role="status" aria-live="polite" aria-label="Generating your CV">
+          <div class="spinner-ring" aria-hidden="true"></div>
+          <p class="loading-text">
+            Crafting your CV<span class="loading-dots" aria-hidden="true"></span>
+          </p>
+          <div class="progress-bar-wrap" aria-hidden="true">
+            <div class="progress-bar-fill"></div>
+          </div>
+        </div>
+
+        <!-- ── API response panel (hidden until request completes) ── -->
+        <div id="response-panel" aria-label="Server response" aria-hidden="true">
+          <div class="response-card">
+
+            <!-- Header row -->
+            <div class="response-header">
+              <div class="response-header__left">
+                <span class="response-status-dot" aria-hidden="true"></span>
+                <h3 id="response-message" class="response-message"></h3>
+              </div>
+              <div class="response-header__actions" style="display: flex; gap: 8px; align-items: center;">
+                <button
+                  id="btn-download-pdf"
+                  class="btn-reset"
+                  style="color: #ffffff; background: var(--grad-btn); border: none; box-shadow: 0 4px 12px rgba(91,118,245,0.3); font-weight: 700; padding: 6px 18px;"
+                  type="button"
+                  aria-label="Download CV PDF"
+                >
+                  📥 Download PDF
+                </button>
+                <button
+                  id="btn-reset"
+                  class="btn-reset"
+                  type="button"
+                  aria-label="Clear response and start over"
+                >
+                  ↩ Start over
+                </button>
+              </div>
+            </div>
+
+            <!-- Meta row: char count + timestamp -->
+            <div class="response-meta">
+              <span class="meta-chip" id="response-char-count"></span>
+              <span class="meta-chip" id="response-timestamp"></span>
+            </div>
+
+            <!-- Divider -->
+            <div class="response-divider" aria-hidden="true"></div>
+
+            <!-- CV Preview Paper Sheet (A4 Professional Layout) -->
+            <div class="cv-paper" id="cv-paper" aria-label="CV Preview Document">
+              
+              <!-- Centered Header -->
+              <div class="cv-paper-header">
+                <h1 id="cv-preview-name" class="cv-p-name"></h1>
+                <div id="cv-preview-title" class="cv-p-title"></div>
+                <div id="cv-preview-contact" class="cv-p-contact"></div>
+              </div>
+
+              <!-- Professional Summary -->
+              <div id="cv-p-summary-section" class="cv-p-section">
+                <h2 class="cv-p-section-title">Professional Summary</h2>
+                <div class="cv-p-section-divider"></div>
+                <p id="cv-preview-summary" class="cv-p-summary-text"></p>
+              </div>
+
+              <!-- Skills / Area of Expertise in columns -->
+              <div id="cv-p-skills-section" class="cv-p-section">
+                <h2 class="cv-p-section-title">Areas of Expertise &amp; Skills</h2>
+                <div class="cv-p-section-divider"></div>
+                <div id="cv-preview-skills" class="cv-p-skills-columns"></div>
+              </div>
+
+              <!-- Key Achievements -->
+              <div id="cv-p-achievements-section" class="cv-p-section">
+                <h2 class="cv-p-section-title">Key Achievements</h2>
+                <div class="cv-p-section-divider"></div>
+                <ul id="cv-preview-achievements" class="cv-p-achievements-list"></ul>
+              </div>
+
+              <!-- Professional Experience -->
+              <div id="cv-p-experience-section" class="cv-p-section">
+                <h2 class="cv-p-section-title">Professional Experience</h2>
+                <div class="cv-p-section-divider"></div>
+                <div id="cv-preview-experience" class="cv-p-list"></div>
+              </div>
+
+              <!-- Education -->
+              <div id="cv-p-education-section" class="cv-p-section">
+                <h2 class="cv-p-section-title">Education</h2>
+                <div class="cv-p-section-divider"></div>
+                <div id="cv-preview-education" class="cv-p-list"></div>
+              </div>
+
+              <!-- Projects -->
+              <div id="cv-p-projects-section" class="cv-p-section">
+                <h2 class="cv-p-section-title">Key Projects</h2>
+                <div class="cv-p-section-divider"></div>
+                <div id="cv-preview-projects" class="cv-p-list"></div>
+              </div>
+
+              <!-- Additional Information (Languages, Certifications, Awards) -->
+              <div id="cv-p-additional-section" class="cv-p-section">
+                <h2 class="cv-p-section-title">Additional Information</h2>
+                <div class="cv-p-section-divider"></div>
+                <div class="cv-p-additional-content">
+                  <!-- Certifications -->
+                  <div id="cv-p-cert-subblock" class="cv-p-subblock">
+                    <h3 class="cv-p-subblock-title">Certifications</h3>
+                    <ul id="cv-preview-certifications" class="cv-p-subblock-list"></ul>
+                  </div>
+                  <!-- Languages -->
+                  <div id="cv-p-lang-subblock" class="cv-p-subblock">
+                    <h3 class="cv-p-subblock-title">Languages</h3>
+                    <ul id="cv-preview-languages" class="cv-p-subblock-list"></ul>
+                  </div>
+                  <!-- Awards -->
+                  <div id="cv-p-awards-subblock" class="cv-p-subblock">
+                    <h3 class="cv-p-subblock-title">Awards &amp; Honors</h3>
+                    <ul id="cv-preview-awards" class="cv-p-subblock-list"></ul>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+
+      </section>
+
+    </main>
+
+    <!-- ── Footer ────────────────────────────────────────── -->
+    <footer role="contentinfo">
+      <div class="container">
+        <p>
+          Built with <span aria-label="love">❤️</span> using
+          <a href="https://groq.com" target="_blank" rel="noopener noreferrer">Groq AI</a>
+          &amp;
+          <a href="https://nodejs.org" target="_blank" rel="noopener noreferrer">Node.js</a>
+          &nbsp;·&nbsp; MarCV &copy; <span id="footer-year"></span>
+        </p>
+      </div>
+    </footer>
+
+  </div><!-- /#app -->
+
+  <!-- ── Toast container ──────────────────────────────────── -->
+  <div class="toast-container" id="toast-container" aria-live="assertive" aria-atomic="true"></div>
+
+  <!-- ── Scripts ──────────────────────────────────────────── -->
+  <script src="/js/api.js"></script>
+  <script src="/js/main.js"></script>
+
+</body>
+</html>

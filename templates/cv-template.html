@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Resume</title>
+  <style>
+    /* Reset */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      background-color: #ffffff;
+      color: #111827; /* Pure dark gray/black text */
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      font-size: 9.5pt;
+      line-height: 1.45;
+      padding: 15mm; /* Standard margins */
+    }
+
+    /* Header */
+    .header {
+      text-align: center;
+      margin-bottom: 14px;
+    }
+
+    .name {
+      font-size: 24pt;
+      font-weight: 700;
+      color: #000000;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      line-height: 1.1;
+      margin-bottom: 4px;
+    }
+
+    .title {
+      font-size: 10.5pt;
+      font-weight: 600;
+      color: #4b5563;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      margin-bottom: 6px;
+    }
+
+    .contact {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 4px 10px;
+      font-size: 8pt;
+      color: #4b5563;
+      font-weight: 500;
+    }
+
+    .contact a {
+      color: #4b5563;
+      text-decoration: none;
+    }
+
+    /* Sections */
+    .section {
+      margin-bottom: 12px;
+      page-break-inside: avoid;
+    }
+
+    .section-title {
+      font-size: 10pt;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #000000;
+      margin-bottom: 3px;
+      page-break-after: avoid;
+    }
+
+    .section-divider {
+      height: 1px;
+      background-color: #111827;
+      margin-bottom: 6px;
+    }
+
+    .summary-text {
+      font-size: 9pt;
+      color: #374151;
+      line-height: 1.5;
+      text-align: justify;
+    }
+
+    /* Skills columns */
+    .skills-columns {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px 14px;
+    }
+
+    .skill-cat {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .skill-cat-title {
+      font-weight: 700;
+      font-size: 8.5pt;
+      color: #000000;
+    }
+
+    .skill-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 3px;
+    }
+
+    .skill-chip {
+      font-size: 7.5pt;
+      font-weight: 500;
+      color: #374151;
+      background-color: #f3f4f6;
+      padding: 1px 6px;
+      border-radius: 3px;
+      border: 1px solid #e5e7eb;
+    }
+
+    /* Key Achievements List */
+    .achievements-list {
+      padding-left: 15px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      margin: 0;
+    }
+
+    .achievements-list li {
+      font-size: 9pt;
+      color: #374151;
+      line-height: 1.45;
+    }
+
+    /* Generic Lists (Experience / Education / Projects) */
+    .list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .item {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      page-break-inside: avoid;
+    }
+
+    .item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 12px;
+    }
+
+    .item-org {
+      font-weight: 700;
+      color: #000000;
+      font-size: 9pt;
+    }
+
+    .item-meta {
+      font-size: 8.5pt;
+      font-weight: 600;
+      color: #4b5563;
+      white-space: nowrap;
+    }
+
+    .item-sub {
+      font-size: 8.5pt;
+      font-weight: 600;
+      font-style: italic;
+      color: #4b5563;
+    }
+
+    .item-bullets {
+      margin-top: 3px;
+      padding-left: 15px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      margin-bottom: 0;
+    }
+
+    .item-bullets li {
+      font-size: 9pt;
+      color: #374151;
+      line-height: 1.45;
+    }
+
+    /* Additional Info sub-blocks */
+    .additional-content {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+    }
+
+    .subblock {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .subblock-title {
+      font-size: 9pt;
+      font-weight: 700;
+      color: #000000;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 2px;
+      border-bottom: 1px solid #e5e7eb;
+      padding-bottom: 2px;
+    }
+
+    .subblock-list {
+      padding-left: 14px;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .subblock-list li {
+      font-size: 8.5pt;
+      color: #374151;
+      line-height: 1.4;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Centered Header -->
+  <div class="header">
+    <h1 class="name">{{NAME}}</h1>
+    <div class="title" id="title-block" style="{{SHOW_TITLE}}">{{TITLE}}</div>
+    <div class="contact">{{CONTACT}}</div>
+  </div>
+
+  <!-- Summary -->
+  <div class="section" style="{{SHOW_SUMMARY}}">
+    <h2 class="section-title">Professional Summary</h2>
+    <div class="section-divider"></div>
+    <p class="summary-text">{{SUMMARY}}</p>
+  </div>
+
+  <!-- Skills -->
+  <div class="section" style="{{SHOW_SKILLS}}">
+    <h2 class="section-title">Areas of Expertise &amp; Skills</h2>
+    <div class="section-divider"></div>
+    <div class="skills-columns">{{SKILLS}}</div>
+  </div>
+
+  <!-- Achievements -->
+  <div class="section" style="{{SHOW_ACHIEVEMENTS}}">
+    <h2 class="section-title">Key Achievements</h2>
+    <div class="section-divider"></div>
+    <ul class="achievements-list">{{ACHIEVEMENTS}}</ul>
+  </div>
+
+  <!-- Experience -->
+  <div class="section" style="{{SHOW_EXPERIENCE}}">
+    <h2 class="section-title">Professional Experience</h2>
+    <div class="section-divider"></div>
+    <div class="list">{{EXPERIENCE}}</div>
+  </div>
+
+  <!-- Education -->
+  <div class="section" style="{{SHOW_EDUCATION}}">
+    <h2 class="section-title">Education</h2>
+    <div class="section-divider"></div>
+    <div class="list">{{EDUCATION}}</div>
+  </div>
+
+  <!-- Projects -->
+  <div class="section" style="{{SHOW_PROJECTS}}">
+    <h2 class="section-title">Key Projects</h2>
+    <div class="section-divider"></div>
+    <div class="list">{{PROJECTS}}</div>
+  </div>
+
+  <!-- Additional Information -->
+  <div class="section" style="{{SHOW_ADDITIONAL}}">
+    <h2 class="section-title">Additional Information</h2>
+    <div class="section-divider"></div>
+    <div class="additional-content" style="grid-template-columns: repeat({{ADDITIONAL_COLS}}, 1fr);">
+      
+      <!-- Certifications -->
+      <div class="subblock" style="{{SHOW_CERTS}}">
+        <h3 class="subblock-title">Certifications</h3>
+        <ul class="subblock-list">{{CERTIFICATIONS}}</ul>
+      </div>
+
+      <!-- Languages -->
+      <div class="subblock" style="{{SHOW_LANGS}}">
+        <h3 class="subblock-title">Languages</h3>
+        <ul class="subblock-list">{{LANGUAGES}}</ul>
+      </div>
+
+      <!-- Awards -->
+      <div class="subblock" style="{{SHOW_AWARDS}}">
+        <h3 class="subblock-title">Awards &amp; Honors</h3>
+        <ul class="subblock-list">{{AWARDS}}</ul>
+      </div>
+
+    </div>
+  </div>
+
+</body>
+</html>
