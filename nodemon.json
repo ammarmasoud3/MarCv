@@ -1,0 +1,3 @@
+{
+  "ignore": ["*.pdf", "test.pdf", "output/*", "tmp/*", "server/output/*"]
+}
