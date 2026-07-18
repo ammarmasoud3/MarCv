@@ -272,20 +272,26 @@ async function generatePDFFromJSON(cv) {
     const page = await browser.newPage();
     await page.setContent(html, { waitUntil: 'networkidle0' });
 
-    const pdfBuffer = await page.pdf({
-      format: 'A4',
-      printBackground: true,
-      margin: {
-        top: '0mm',
-        right: '0mm',
-        bottom: '0mm',
-        left: '0mm'
-      }
-    });
+    let pdfBuffer;
+    try {
+      pdfBuffer = await page.pdf({
+        format: 'A4',
+        printBackground: true,
+        margin: {
+          top: '0mm',
+          right: '0mm',
+          bottom: '0mm',
+          left: '0mm'
+        }
+      });
+      console.log(`[MarCV] Puppeteer page.pdf() successfully generated buffer. Size: ${pdfBuffer ? pdfBuffer.length : 0} bytes`);
+    } catch (pdfErr) {
+      console.error('[MarCV] Puppeteer page.pdf() failed:', pdfErr);
+      throw pdfErr;
+    }
 
     await browser.close();
-    return pdfBuffer;
-
+    return Buffer.from(pdfBuffer);
   } catch (err) {
     await browser.close();
     throw err;
