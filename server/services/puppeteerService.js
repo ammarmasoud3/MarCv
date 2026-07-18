@@ -7,7 +7,8 @@
 
 const fs = require('fs').promises;
 const path = require('path');
-const chromium = require('@sparticuz/chromium');
+const chromiumModule = require('@sparticuz/chromium');
+const chromium = chromiumModule.default || chromiumModule;
 const puppeteer = require('puppeteer-core');
 
 /**
@@ -244,6 +245,9 @@ async function generatePDFFromJSON(cv) {
   let args = [];
   let headless;
 
+  console.log(`[MarCV] Launching browser. Platform: ${process.platform}, isLocal: ${isLocal}`);
+  console.log(`[MarCV] @sparticuz/chromium check: type of chromiumModule is ${typeof chromiumModule}, default property is ${typeof chromiumModule.default}, typeof executablePath is ${typeof chromium.executablePath}`);
+
   if (isLocal) {
     const fsSync = require('fs');
     const localPaths = [
@@ -254,10 +258,18 @@ async function generatePDFFromJSON(cv) {
     executablePath = localPaths.find(p => fsSync.existsSync(p)) || process.env.PUPPETEER_EXECUTABLE_PATH;
     args = ['--no-sandbox', '--disable-setuid-sandbox'];
     headless = true;
+    console.log(`[MarCV] Local Chrome path resolved: ${executablePath}`);
   } else {
-    executablePath = await chromium.executablePath();
-    args = chromium.args;
-    headless = chromium.headless;
+    try {
+      console.log('[MarCV] Render mode: resolving @sparticuz/chromium executablePath');
+      executablePath = await chromium.executablePath();
+      args = chromium.args;
+      headless = chromium.headless !== undefined ? chromium.headless : true;
+      console.log(`[MarCV] Render mode executablePath resolved: ${executablePath}, args count: ${args ? args.length : 0}, headless: ${headless}`);
+    } catch (resolveErr) {
+      console.error('[MarCV] Failed to resolve @sparticuz/chromium executablePath:', resolveErr);
+      throw resolveErr;
+    }
   }
 
   // Launch browser instance
