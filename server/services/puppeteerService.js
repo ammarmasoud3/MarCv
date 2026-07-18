@@ -7,7 +7,8 @@
 
 const fs = require('fs').promises;
 const path = require('path');
-const puppeteer = require('puppeteer');
+const chromium = require('@sparticuz/chromium');
+const puppeteer = require('puppeteer-core');
 
 /**
  * Generates an A4 PDF buffer from the structured CV JSON.
@@ -237,11 +238,34 @@ async function generatePDFFromJSON(cv) {
     html = html.replace('{{SHOW_ADDITIONAL}}', 'display: none;');
   }
 
-  // Launch headless browser via Puppeteer
+  // Detect if running locally (e.g., Windows development) or on Render (Linux production environment)
+  const isLocal = process.platform === 'win32' || process.env.IS_LOCAL === 'true';
+  let executablePath;
+  let args = [];
+  let headless;
+
+  if (isLocal) {
+    const fsSync = require('fs');
+    const localPaths = [
+      'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
+      'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
+      `${process.env.LOCALAPPDATA}\\Google\\Chrome\\Application\\chrome.exe`
+    ];
+    executablePath = localPaths.find(p => fsSync.existsSync(p)) || process.env.PUPPETEER_EXECUTABLE_PATH;
+    args = ['--no-sandbox', '--disable-setuid-sandbox'];
+    headless = true;
+  } else {
+    executablePath = await chromium.executablePath();
+    args = chromium.args;
+    headless = chromium.headless;
+  }
+
+  // Launch browser instance
   const browser = await puppeteer.launch({
-    executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined,
-    headless: true,
-    args: ['--no-sandbox', '--disable-setuid-sandbox']
+    args: args,
+    defaultViewport: chromium.defaultViewport || { width: 1200, height: 800 },
+    executablePath: executablePath,
+    headless: headless,
   });
 
   try {
